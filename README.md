@@ -167,10 +167,4 @@ When AI detects a repeat late payer or B2B invoice, it logs a payment commitment
 
 ---
 
-## 📄 License
-
-MIT License — free to use, modify, and distribute.
-
----
-
 *Built for the Razorpay Hackathon 2024 · Track 03 — AI Revenue Recovery*
