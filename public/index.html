@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RecoverAI — AI Payment Recovery Dashboard</title>
+  <meta name="description" content="AI-powered payment recovery agent. Detect, analyze, and recover lost revenue automatically with Gemini AI + Razorpay." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+
+  <!-- Toasts -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- SMS Popup -->
+  <div class="sms-overlay" id="sms-overlay" onclick="closeSmsPopup()">
+    <div class="sms-modal" onclick="event.stopPropagation()">
+      <div class="sms-header">
+        <div class="sms-app-icon">💬</div>
+        <div>
+          <div class="sms-app-name">SMS Recovery Sent</div>
+          <div class="sms-app-sub">AI-generated personalized message</div>
+        </div>
+        <button class="sms-close" onclick="closeSmsPopup()">✕</button>
+      </div>
+      <div class="sms-phone">
+        <div class="sms-contact" id="sms-contact">+91 XXXXX XXXXX</div>
+        <div class="sms-bubble-wrap">
+          <div class="sms-bubble" id="sms-bubble">Loading...</div>
+          <div class="sms-time">Just now · Delivered ✓✓</div>
+        </div>
+        <div class="sms-link-preview">
+          <div class="sms-link-icon">🔗</div>
+          <div>
+            <div class="sms-link-title">Retry Payment</div>
+            <div class="sms-link-url" id="sms-link-url">rzp.io/...</div>
+          </div>
+        </div>
+      </div>
+      <div class="sms-actions">
+        <a class="sms-wa-btn" id="sms-wa-link" href="#" target="_blank">
+          <span>📲</span> Open in WhatsApp
+        </a>
+      </div>
+      <div class="sms-sent-badge">✅ Message Delivered Successfully</div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">⚡</div>
+        <span class="logo-text">RecoverAI</span>
+        <span class="logo-badge">LIVE</span>
+      </div>
+      <div class="header-center">
+        <div class="header-tag">Razorpay × Gemini AI · v2.0</div>
+      </div>
+      <div class="header-right">
+        <button class="demo-btn" id="demo-btn" onclick="runFullDemo()">
+          <span>🎬</span> Run Full Demo
+        </button>
+        <div class="header-status">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text">Connecting...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- Stats Row 1: Primary -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-top"><span class="stat-icon">💳</span><span class="stat-trend trend-red">+12 today</span></div>
+        <div class="stat-value" id="s-failed">0</div>
+        <div class="stat-label">Failed Payments</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><span class="stat-icon">🛒</span><span class="stat-trend trend-red">+5 today</span></div>
+        <div class="stat-value" id="s-abandoned">0</div>
+        <div class="stat-label">Abandoned Carts</div>
+      </div>
+      <div class="stat-card accent-green">
+        <div class="stat-top"><span class="stat-icon">✅</span><span class="stat-trend trend-green" id="s-rate-badge">0%</span></div>
+        <div class="stat-value" id="s-recovered">0</div>
+        <div class="stat-label">Payments Recovered</div>
+      </div>
+      <div class="stat-card accent-gold">
+        <div class="stat-top"><span class="stat-icon">₹</span><span class="stat-trend trend-green">↑ Revenue</span></div>
+        <div class="stat-value" id="s-revenue">₹0</div>
+        <div class="stat-label">Revenue Recovered</div>
+      </div>
+    </section>
+
+    <!-- Stats Row 2: Secondary -->
+    <section class="stats-mini-grid">
+      <div class="mini-stat">
+        <span class="mini-icon">📱</span>
+        <span class="mini-val" id="s-sms">0</span>
+        <span class="mini-label">SMS Sent</span>
+      </div>
+      <div class="mini-stat">
+        <span class="mini-icon">🔗</span>
+        <span class="mini-val" id="s-links">0</span>
+        <span class="mini-label">Payment Links</span>
+      </div>
+      <div class="mini-stat">
+        <span class="mini-icon">🔴</span>
+        <span class="mini-val" id="s-highrisk">0</span>
+        <span class="mini-label">High Risk</span>
+      </div>
+      <div class="mini-stat">
+        <span class="mini-icon">📊</span>
+        <span class="mini-val" id="s-rate">0%</span>
+        <span class="mini-label">Recovery Rate</span>
+      </div>
+      <div class="mini-stat">
+        <span class="mini-icon">🤖</span>
+        <span class="mini-val">5</span>
+        <span class="mini-label">AI Actions</span>
+      </div>
+      <div class="mini-stat">
+        <span class="mini-icon">⚡</span>
+        <span class="mini-val">~12s</span>
+        <span class="mini-label">Avg Response</span>
+      </div>
+    </section>
+
+    <!-- Simulate Panel -->
+    <section class="simulate-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">🎮 Simulate Payment Event</h2>
+          <p class="panel-subtitle">Trigger a real scenario — AI diagnoses, creates recovery link & sends SMS automatically</p>
+        </div>
+      </div>
+      <div class="simulate-grid">
+        <button class="sim-btn" id="sim-failed" onclick="simulate('payment.failed','failed')">
+          <div class="sim-top"><span class="sim-icon">💳</span><span class="sim-badge sim-badge-red">HIGH IMPACT</span></div>
+          <span class="sim-label">Payment Failed</span>
+          <span class="sim-desc">Card declined / insufficient funds</span>
+        </button>
+        <button class="sim-btn" id="sim-abandoned" onclick="simulate('checkout.abandoned','abandoned')">
+          <div class="sim-top"><span class="sim-icon">🛒</span><span class="sim-badge sim-badge-yellow">COMMON</span></div>
+          <span class="sim-label">Cart Abandoned</span>
+          <span class="sim-desc">Customer left without paying</span>
+        </button>
+        <button class="sim-btn" id="sim-degradation" onclick="simulateDegradation()">
+          <div class="sim-top"><span class="sim-icon">🚨</span><span class="sim-badge sim-badge-red">SYSTEM ALERT</span></div>
+          <span class="sim-label">Trigger Degradation</span>
+          <span class="sim-desc">Simulate 3 UPI failures</span>
+        </button>
+        <button class="sim-btn" id="sim-sub_failed" onclick="simulate('subscription.charged.failed','sub_failed')">
+          <div class="sim-top"><span class="sim-icon">🔄</span><span class="sim-badge sim-badge-blue">RECURRING</span></div>
+          <span class="sim-label">Mandate Retry</span>
+          <span class="sim-desc">Auto-debit failure</span>
+        </button>
+        <button class="sim-btn" id="sim-promise" onclick="simulate('payment.failed','promise')">
+          <div class="sim-top"><span class="sim-icon">🤝</span><span class="sim-badge sim-badge-yellow">PROMISE</span></div>
+          <span class="sim-label">Late Payer</span>
+          <span class="sim-desc">Customer with history of delays</span>
+        </button>
+        <button class="sim-btn" id="sim-success" onclick="simulate('payment.captured','success')">
+          <div class="sim-top"><span class="sim-icon">🎉</span><span class="sim-badge sim-badge-green">SUCCESS</span></div>
+          <span class="sim-label">Payment Success</span>
+          <span class="sim-desc">Monitor successful payments</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- New Track 03 Features Grid -->
+    <section class="track3-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+      <!-- Degradation Alerts -->
+      <div class="panel">
+        <div class="panel-header" style="margin-bottom: 12px;">
+          <h3 style="font-size: 16px; font-weight: 700;">🚨 Degradation Detector</h3>
+        </div>
+        <div id="degradation-feed" style="background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius-sm); padding: 16px; min-height: 100px;">
+          <div style="font-size: 13px; color: var(--text-muted); text-align: center; padding: 20px;">No active degradations. All systems operational.</div>
+        </div>
+      </div>
+      
+      <!-- Promise to Pay Tracker -->
+      <div class="panel">
+        <div class="panel-header" style="margin-bottom: 12px;">
+          <h3 style="font-size: 16px; font-weight: 700;">🤝 Promise-to-Pay Tracker</h3>
+        </div>
+        <div id="promise-feed" style="background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius-sm); padding: 16px; min-height: 100px; max-height: 250px; overflow-y: auto;">
+          <div style="font-size: 13px; color: var(--text-muted); text-align: center; padding: 20px;">No active promises to track.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI Thinking -->
+    <div class="ai-thinking" id="ai-thinking">
+      <div class="ai-thinking-inner">
+        <div class="ai-spinner"></div>
+        <div>
+          <div class="ai-thinking-title">🤖 Gemini AI is working...</div>
+          <div class="ai-thinking-sub" id="ai-sub">Checking customer history...</div>
+        </div>
+      </div>
+      <div class="ai-steps">
+        <div class="ai-step" id="as1">📡 Event received</div>
+        <div class="ai-step" id="as2">📋 History checked</div>
+        <div class="ai-step" id="as3">🧠 AI analyzing</div>
+        <div class="ai-step" id="as4">⚡ Action decided</div>
+        <div class="ai-step" id="as5">📱 SMS + Link sent</div>
+      </div>
+    </div>
+
+    <!-- Cases Feed -->
+    <section class="events-section">
+      <div class="events-header">
+        <h2 class="panel-title">⚡ Live Recovery Cases</h2>
+        <div class="events-controls">
+          <button class="btn-clear" onclick="clearAll()">Clear All</button>
+          <div class="refresh-indicator"><span class="refresh-dot"></span> Auto-refreshing</div>
+        </div>
+      </div>
+      <div class="events-feed" id="events-feed">
+        <div class="empty-state">
+          <div class="empty-icon">🤖</div>
+          <div class="empty-title">RecoverAI is watching your payments...</div>
+          <div class="empty-sub">Simulate an event above or connect real Razorpay webhooks to see AI recovery in action</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

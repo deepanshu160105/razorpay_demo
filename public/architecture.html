@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RecoverAI - Architecture Flow Diagram</title>
+  <style>
+    body {
+      background: #0f1115;
+      color: white;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #00e5a0;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    p {
+      color: #8b949e;
+      margin-bottom: 40px;
+    }
+    .mermaid-container {
+      background: #161b22;
+      padding: 40px;
+      border-radius: 12px;
+      border: 1px solid #30363d;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      width: 100%;
+      max-width: 1100px;
+    }
+  </style>
+  <!-- Load Mermaid -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ 
+      startOnLoad: true, 
+      theme: 'dark',
+      themeVariables: {
+        primaryColor: '#2b313c',
+        primaryTextColor: '#fff',
+        primaryBorderColor: '#6c5ce7',
+        lineColor: '#8b949e',
+        secondaryColor: '#00e5a0',
+        tertiaryColor: '#fff'
+      },
+      flowchart: {
+        curve: 'basis'
+      }
+    });
+  </script>
+</head>
+<body>
+
+  <h1>⚡ RecoverAI 2D Flow Architecture</h1>
+  <p>Take a screenshot of this diagram for your presentation!</p>
+
+  <div class="mermaid-container">
+    <div class="mermaid">
+      flowchart TD
+          Customer([👤 Customer]) -->|Payment Fails| Razorpay{💳 Razorpay Gateway}
+          Razorpay -->|Webhook Event| Server[⚙️ Node.js Server]
+          
+          subgraph AI Engine [🧠 Gemini AI Decision Core]
+              Server --> Context[Retrieve Customer History & Outage Data]
+              Context --> Gemini((Google Gemini 3.6 Flash))
+              Gemini -->|Action Routing| Router{Recovery Router}
+          end
+
+          subgraph ActionWorkflows [⚡ 5 Smart Recovery Actions]
+              Router -->|1. Subscription Failed| A[⏳ Mandate Sequencer]
+              Router -->|2. High-Value B2B| B[🏢 B2B Invoice Chaser]
+              Router -->|3. Delayed Payer| C[🤝 Promise-to-Pay Tracker]
+              Router -->|4. Gateway Down| D[🚨 Degradation Detector]
+              Router -->|5. Normal Drop-off| E[💬 Nudge & Payment Link]
+          end
+
+          A -->|Queues silent retry at 10 PM| SystemAction[(Backend Queue)]
+          B -->|Sends Formal Email| Customer
+          B -->|Logs Tracker| DB[(Dashboard Database)]
+          C -->|Logs 2-day Extension| DB
+          D -->|Alerts Merchant & Re-routes| Dashboard[📊 Merchant Dashboard]
+          E -->|Fast2SMS & WhatsApp| Customer
+          
+          SystemAction -.-> Razorpay
+          DB -.-> Dashboard
+          
+          classDef user fill:#2d3436,stroke:#00b894,stroke-width:2px;
+          classDef ai fill:#2d3436,stroke:#6c5ce7,stroke-width:2px,color:#fff;
+          classDef gateway fill:#2d3436,stroke:#0984e3,stroke-width:2px;
+          classDef action fill:#1e272e,stroke:#00e5a0,stroke-width:1px;
+          
+          class Customer user;
+          class Gemini ai;
+          class Razorpay gateway;
+          class A,B,C,D,E action;
+    </div>
+  </div>
+
+</body>
+</html>

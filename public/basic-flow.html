@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RecoverAI - Basic Flow</title>
+  <style>
+    body {
+      background: #0f1115;
+      color: white;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #00e5a0;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    p {
+      color: #8b949e;
+      margin-bottom: 40px;
+    }
+    .mermaid-container {
+      background: #161b22;
+      padding: 40px;
+      border-radius: 12px;
+      border: 1px solid #30363d;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      width: 100%;
+      max-width: 800px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ 
+      startOnLoad: true, 
+      theme: 'dark',
+      themeVariables: {
+        primaryColor: '#2b313c',
+        primaryTextColor: '#fff',
+        primaryBorderColor: '#6c5ce7',
+        lineColor: '#8b949e',
+        secondaryColor: '#00e5a0',
+        tertiaryColor: '#fff'
+      },
+      flowchart: { curve: 'basis' }
+    });
+  </script>
+</head>
+<body>
+
+  <h1>⚡ RecoverAI: Core Logic in 5 Steps</h1>
+  <p>The simplest explanation of what the app does.</p>
+
+  <div class="mermaid-container">
+    <div class="mermaid">
+      flowchart TD
+          Step1([1. Customer Payment Fails\n❌ Failed / Cart Abandoned]) 
+          Step2{2. Razorpay Sends Webhook\n📡 to our Node.js Server}
+          Step3[3. Gemini AI Analyzes Failure\n🧠 Checks Amount, Bank & History]
+          Step4{4. AI Takes Action\n📲 Sends SMS / WhatsApp / Schedules Retry}
+          Step5([5. Customer Completes Payment\n💰 Revenue Recovered!])
+          
+          Step1 ==> Step2
+          Step2 ==> Step3
+          Step3 ==> Step4
+          Step4 ==> Step5
+          
+          classDef start_end fill:#2d3436,stroke:#00b894,stroke-width:3px;
+          classDef core fill:#2d3436,stroke:#6c5ce7,stroke-width:2px,color:#fff;
+          classDef action fill:#1e272e,stroke:#0984e3,stroke-width:2px;
+          
+          class Step1,Step5 start_end;
+          class Step3 core;
+          class Step2,Step4 action;
+    </div>
+  </div>
+
+</body>
+</html>
